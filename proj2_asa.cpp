@@ -17,13 +17,15 @@ void insertion_sort(struct Edge_info* list, Edge_info newElement){
     if (list == NULL) {list = &newElement;}
     
     else{
+        struct Edge_info* current = list;
         struct Edge_info* saveNext = NULL;
-        while(list->weight > newElement.weight){
-            list = list->next;
+        while(current->weight > newElement.weight){
+            current = current->next;
         }
-        saveNext = list->next;
+        saveNext = current->next;
         newElement.next = saveNext;
-        list->next = &newElement;
+        current->next = &newElement;
+        list = current;
     }
 }
 
@@ -33,10 +35,14 @@ int find_max_total_weight(struct Edge_info *list, long unsigned int num_vertices
     struct Edge_info* current = list;
 
     while(explored_vertices.size() < num_vertices) {
-        if(explored_vertices[current->v1] != current->v1 ||
-        explored_vertices[current->v2] != current->v2) {
-            explored_vertices[current->v1] = current->v1;
-            explored_vertices[current->v2] = current->v2;
+        
+        int i1 = current->v1;
+        int i2 = current->v2;
+        printf("here\n");
+        if(explored_vertices[i1] != i1 ||
+        explored_vertices[i2] != i2) {
+            explored_vertices[i1] = i1;
+            explored_vertices[i2] = i2;
             max_total_weight += current->weight;
         }
         current = current->next;
