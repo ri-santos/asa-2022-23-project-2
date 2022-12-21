@@ -4,7 +4,9 @@
 #include <map>
 #include <list>
 #include <vector>
+#include <bits/stdc++.h>
 using namespace std;
+
 
 struct Edge_info{
     int weight;
@@ -39,10 +41,11 @@ int find_max_total_weight(struct Edge_info *list, long unsigned int num_vertices
         int i1 = current->v1;
         int i2 = current->v2;
         printf("here\n");
-        if(explored_vertices[i1] != i1 ||
-        explored_vertices[i2] != i2) {
-            explored_vertices[i1] = i1;
-            explored_vertices[i2] = i2;
+
+        if(find(explored_vertices.begin(), explored_vertices.end(), i1) == explored_vertices.end() &&
+        find(explored_vertices.begin(), explored_vertices.end(), i2) == explored_vertices.end()) {
+            explored_vertices.push_back(i1);
+            explored_vertices.push_back(i2);
             max_total_weight += current->weight;
         }
         current = current->next;
