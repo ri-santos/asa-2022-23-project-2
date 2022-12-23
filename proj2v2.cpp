@@ -67,20 +67,17 @@ void bubbleSort(Edge edge[], int n){
 int findMaxWeight(Edge edges[], int num_vertices, int num_edges){
     int maxWeight = 0;
     int explored_vertices[num_vertices] = {0};
-    int vertices_counter = 0;
 
     int i = 0;
-    while(vertices_counter < num_vertices && i < num_edges){
+    while(i < num_edges){
         int v1 = edges[i].v1;
         int v2 = edges[i].v2;
         if(explored_vertices[v1-1] == 0 || explored_vertices[v2-1] == 0) {
             if(explored_vertices[v1-1] == 0) {
                 explored_vertices[v1-1] = 1;
-                vertices_counter++;
             }
             if(explored_vertices[v2-1] == 0) {
                 explored_vertices[v2-1] = 1;
-                vertices_counter++;
             }
             maxWeight += edges[i].weight;
         }
