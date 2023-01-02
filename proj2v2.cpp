@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <iostream>
 #include <vector>
-#include <map>
+#include <algorithm>
+
 using namespace std;
 
 
@@ -13,77 +13,55 @@ typedef struct {
 } Edge;
 
 
-// void merge(Edge edges[], int l, int m, int r) {
-    
-//     printf("yau\n");
-//     int i, j, k;
-//     Edge aux[r];
+bool comparator(Edge e1, Edge e2){
+    return e2.weight < e1.weight;
+}
 
-//     for (i = m+1; i > l; i--){
-//         aux[i-1] = edges[i-1];
-//     }
-//     for (j = m; j < r; j++){
-//         aux[r+m-j] = edges[j+1];
-//     }
-//     for (k = l; k <= r; k++){
-//         if (aux[l].weight <= aux[i].weight){ 
-//             edges[k] = aux[j--]; 
-//         }
-//         else{ 
-//             edges[k] = aux[i++]; 
-//         }
-//     }
-// }
+// gets the parent node of a given node v
+int findSet(int p[], int v){
+    if (v != p[v]){                        // if the parent is not the node itself, get the parent node's parent
+        p[v] = findSet(p, p[v]);
+        
+    }
+    return p[v];
+}
 
-// void mergeSort(Edge edges[], int l, int r) {
-//     int m = (r + l) / 2;
-
-//     printf("sort\n");
-//     if(r <= l){ return; }
-//     mergeSort(edges, l, m);
-//     mergeSort(edges, m + 1, r);
-//     merge(edges, l, m, r);
-// }
-
-
-void bubbleSort(Edge edge[], int n){
-    int i, j;
-    bool swapped = false;
-
-    for (i = 0; i < n - 1; i++){
- 
-        for (j = 0; j < n - i - 1; j++){
-            if (edge[j].weight < edge[j + 1].weight){
-                swap(edge[j], edge[j + 1]);
-                swapped = true;
-            }
+// links 2 nodes, changing their parents and ranks
+void link(int v1, int v2, int p[], int r[]){
+    if (r[v1] < r[v2]){
+        p[v1] = v2;
+    }
+    else{
+        p[v2] = v1;
+        if (r[v1] == r[v2]){
+            r[v1]++;
         }
-
-        if (swapped == false){ break; }
     }
 }
 
 
-int findMaxWeight(Edge edges[], int num_vertices, int num_edges){
+int findMaxWeight(vector<Edge> edges, int num_vertices, int num_edges){
     int maxWeight = 0;
-    int explored_vertices[num_vertices] = {0};
+    int *parent = (int*)malloc(sizeof(int) * num_vertices);
+    int *rank = (int*)malloc(sizeof(int) * num_vertices);
 
-    int i = 0;
-    while(i < num_edges){
-        int v1 = edges[i].v1;
-        int v2 = edges[i].v2;
-        if(explored_vertices[v1-1] == 0 || explored_vertices[v2-1] == 0) {
-            if(explored_vertices[v1-1] == 0) {
-                explored_vertices[v1-1] = 1;
-            }
-            if(explored_vertices[v2-1] == 0) {
-                explored_vertices[v2-1] = 1;
-            }
-            maxWeight += edges[i].weight;
-        }
-        i++;
+    int i;
+    for (i = 0; i < num_vertices; i++){
+        parent[i] = i;
+        rank[i] = 0;
     }
-
+    
+    for (i = 0; i < num_edges; i++){
+        int find1 = findSet(parent, edges.at(i).v1 - 1);
+        int find2 = findSet(parent, edges.at(i).v2 - 1);
+        if (find1 != find2){
+            maxWeight += edges.at(i).weight;
+            link(find1, find2, parent, rank);
+        }
+    }
+    
+    free(parent);
+    free(rank);
     return maxWeight;
 }
 
@@ -92,23 +70,28 @@ int main(){
     int num_vertices;
     int num_edges;
     int v1, v2, weight;
+    // vector of all edges
+    vector<Edge> edges;
     
     //input read
-    cin >> num_vertices;
-    cin >> num_edges;
-    
-    // array of all edges
-    Edge edges[num_edges];
+    if(scanf("%d", &num_vertices) != 1)
+        exit(1);
+    if(scanf("%d", &num_edges) != 1)
+        exit(1);
+        
     for(int i = 0; i < num_edges; i++) {
-        cin >> v1 >> v2 >> weight;
-        edges[i].weight = weight;
-        edges[i].v1 = v1;
-        edges[i].v2 = v2;
+        if(scanf("%d %d %d", &v1, &v2, &weight) != 3)
+            exit(1);
+        Edge newEdge;
+        newEdge.weight = weight;
+        newEdge.v1 = v1;
+        newEdge.v2 = v2;
+        edges.push_back(newEdge);
     }
 
-    bubbleSort(edges, num_edges);
+    sort(edges.begin(), edges.end(), comparator);
 
-    cout << findMaxWeight(edges, num_vertices, num_edges) << endl;
+    printf("%d\n", findMaxWeight(edges, num_vertices, num_edges));
 
     return 0;
 }
