@@ -51,12 +51,15 @@ int findMaxWeight(vector<Edge> edges, int num_vertices, int num_edges){
         rank[i] = 0;
     }
     
+    int counter = 0;
     for (i = 0; i < num_edges; i++){
+        if(counter == num_vertices - 1) { break; }
         int find1 = findSet(parent, edges.at(i).v1 - 1);
         int find2 = findSet(parent, edges.at(i).v2 - 1);
         if (find1 != find2){
             maxWeight += edges.at(i).weight;
             link(find1, find2, parent, rank);
+            counter++;
         }
     }
     
